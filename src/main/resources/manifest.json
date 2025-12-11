@@ -1,0 +1,18 @@
+{
+  "Group": "Nitrado",
+  "Name": "Query",
+  "Version": "1.0.0",
+  "Authors": [
+    {
+      "Name": "André Becker",
+      "Email": "andre.becker@nitrado.net",
+      "Url": "https://www.nitrado.net"
+    }
+  ],
+  "Website": "https://www.nitrado.net",
+  "Main": "net.nitrado.hytale.plugins.query.Query",
+  "ServerVersion": "*",
+  "Dependencies": {
+    "Nitrado:WebServer": "*"
+  }
+}
