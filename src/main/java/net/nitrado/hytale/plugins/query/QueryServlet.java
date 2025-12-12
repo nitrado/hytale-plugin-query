@@ -2,19 +2,15 @@ package net.nitrado.hytale.plugins.query;
 
 import com.hypixel.hytale.protocol.Settings;
 import com.hypixel.hytale.server.core.HytaleServer;
-import com.hypixel.hytale.server.core.Options;
 import com.hypixel.hytale.server.core.universe.Universe;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import net.nitrado.hytale.plugins.webserver.auth.HytaleUserPrincipal;
 import org.bson.Document;
-import org.bson.json.JsonWriter;
 import org.bson.json.JsonWriterSettings;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class QueryServlet extends HttpServlet {
 
@@ -27,15 +23,15 @@ public class QueryServlet extends HttpServlet {
 
         var principal = req.getUserPrincipal();
         if (principal instanceof HytaleUserPrincipal user) {
-            if (user.hasPermission(Permissions.PERMISSION_VIEW_SERVER)) {
+            if (user.hasPermission(Permissions.VIEW_SERVER)) {
                 this.addServerData(doc);
             }
 
-            if (user.hasPermission(Permissions.PERMISSION_VIEW_PLAYERS)) {
+            if (user.hasPermission(Permissions.VIEW_PLAYERS)) {
                 this.addPlayerData(doc);
             }
 
-            if (user.hasPermission(Permissions.PERMISSION_VIEW_UNIVERSE)) {
+            if (user.hasPermission(Permissions.VIEW_UNIVERSE)) {
                 this.addUniverseData(doc);
             }
         }

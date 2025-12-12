@@ -5,8 +5,6 @@ import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.plugin.PluginManager;
 import com.hypixel.hytale.server.core.plugin.config.PluginIdentifier;
 import net.nitrado.hytale.plugins.webserver.WebServer;
-import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
-import org.eclipse.jetty.ee10.servlet.ServletHolder;
 
 import javax.annotation.Nonnull;
 import java.util.logging.Level;
@@ -34,9 +32,9 @@ public class Query extends JavaPlugin {
             webServer
                     .createHandlerBuilder(this)
                     .requireAnyPermissionOf(
-                            Permissions.PERMISSION_VIEW_PLAYERS,
-                            Permissions.PERMISSION_VIEW_SERVER,
-                            Permissions.PERMISSION_VIEW_UNIVERSE
+                            Permissions.VIEW_PLAYERS,
+                            Permissions.VIEW_SERVER,
+                            Permissions.VIEW_UNIVERSE
                     )
                     .addServlet(new QueryServlet(), "/")
                     .register();
