@@ -4,7 +4,7 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.plugin.PluginManager;
 import com.hypixel.hytale.server.core.plugin.config.PluginIdentifier;
-import net.nitrado.hytale.plugins.webserver.WebServer;
+import net.nitrado.hytale.plugins.webserver.WebServerPlugin;
 
 import javax.annotation.Nonnull;
 import java.util.logging.Level;
@@ -17,14 +17,13 @@ public class Query extends JavaPlugin {
 
     @Override
     protected void setup() {
-        getLogger().atInfo().log("query setup");
         this.registerHandlers();
     }
 
     private void registerHandlers() {
         var plugin = PluginManager.get().getPlugin(new PluginIdentifier("Nitrado", "WebServer"));
 
-        if (!(plugin instanceof WebServer webServer)) {
+        if (!(plugin instanceof WebServerPlugin webServer)) {
             return;
         }
 
@@ -44,7 +43,5 @@ public class Query extends JavaPlugin {
     }
 
     @Override
-    protected void start() {
-        getLogger().atInfo().log("query");
-    }
+    protected void start() {}
 }
