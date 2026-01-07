@@ -1,12 +1,13 @@
 package net.nitrado.hytale.plugins.query;
 
-import com.hypixel.hytale.protocol.Settings;
+import com.hypixel.hytale.protocol.ProtocolSettings;
 import com.hypixel.hytale.server.core.HytaleServer;
 import com.hypixel.hytale.server.core.universe.Universe;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import net.nitrado.hytale.plugins.webserver.auth.HytaleUserPrincipal;
+import net.nitrado.hytale.plugins.webserver.authentication.HytaleUserPrincipal;
+import net.nitrado.hytale.plugins.webserver.authorization.RequirePermissions;
 import org.bson.Document;
 import org.bson.json.JsonWriterSettings;
 
@@ -15,6 +16,7 @@ import java.io.IOException;
 public class QueryServlet extends HttpServlet {
 
     @Override
+    @RequirePermissions(value = {Permissions.READ_PLAYERS, Permissions.READ_SERVER, Permissions.READ_UNIVERSE}, mode = RequirePermissions.Mode.ANY)
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
         resp.setContentType("application/json");
@@ -23,15 +25,15 @@ public class QueryServlet extends HttpServlet {
 
         var principal = req.getUserPrincipal();
         if (principal instanceof HytaleUserPrincipal user) {
-            if (user.hasPermission(Permissions.VIEW_SERVER)) {
+            if (user.hasPermission(Permissions.READ_SERVER)) {
                 this.addServerData(doc);
             }
 
-            if (user.hasPermission(Permissions.VIEW_PLAYERS)) {
+            if (user.hasPermission(Permissions.READ_PLAYERS)) {
                 this.addPlayerData(doc);
             }
 
-            if (user.hasPermission(Permissions.VIEW_UNIVERSE)) {
+            if (user.hasPermission(Permissions.READ_UNIVERSE)) {
                 this.addUniverseData(doc);
             }
         }
@@ -42,7 +44,8 @@ public class QueryServlet extends HttpServlet {
     protected void addServerData(Document doc) {
         doc.append("Server", new Document()
                 .append("Name", HytaleServer.get().getServerName())
-                .append("ProtocolVersion", Settings.VERSION_HASH)
+                .append("ProtocolVersion", ProtocolSettings.PROTOCOL_VERSION)
+                .append("ProtocolHash", ProtocolSettings.PROTOCOL_HASH)
                 .append("MaxPlayers", HytaleServer.get().getConfig().getMaxPlayers())
         );
     }

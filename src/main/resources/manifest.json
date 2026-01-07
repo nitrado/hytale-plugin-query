@@ -10,9 +10,9 @@
     }
   ],
   "Website": "https://www.nitrado.net",
-  "Main": "net.nitrado.hytale.plugins.query.Query",
+  "Main": "net.nitrado.hytale.plugins.query.QueryPlugin",
   "ServerVersion": "*",
-  "Dependencies": {
+  "OptionalDependencies": {
     "Nitrado:WebServer": "*"
   }
 }
