@@ -32,7 +32,7 @@ public class QueryPlugin extends JavaPlugin {
         this.webServerPlugin = webServer;
 
         try {
-            webServerPlugin.getWebServer().addServlet(this, "", new QueryServlet());
+            webServerPlugin.addServlet(this, "", new QueryServlet());
         } catch (Exception e) {
             getLogger().at(Level.SEVERE).withCause(e).log("Failed to register route.");
         }
@@ -40,6 +40,6 @@ public class QueryPlugin extends JavaPlugin {
 
     @Override
     protected void shutdown() {
-        webServerPlugin.getWebServer().removeServlets(this);
+        webServerPlugin.removeServlets(this);
     }
 }

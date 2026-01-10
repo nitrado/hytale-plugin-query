@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.nitrado.hytale.plugins</groupId>
-    <artifactId>query</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>nitrado-query</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>25</maven.compiler.source>
@@ -23,8 +23,8 @@
         </dependency>
         <dependency>
             <groupId>net.nitrado.hytale.plugins</groupId>
-            <artifactId>webserver</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <artifactId>nitrado-webserver</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
