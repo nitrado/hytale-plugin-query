@@ -66,7 +66,7 @@ public class QueryServlet extends HttpServlet {
     }
 
     protected void handleJsonV1(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.setContentType("application/json");
+        resp.setContentType(JSON_V1);
 
         Document doc = new Document();
 
