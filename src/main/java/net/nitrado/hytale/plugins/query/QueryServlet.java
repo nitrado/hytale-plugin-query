@@ -13,10 +13,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import net.nitrado.hytale.plugins.webserver.authentication.HytaleUserPrincipal;
 import net.nitrado.hytale.plugins.webserver.authorization.RequirePermissions;
+import net.nitrado.hytale.plugins.webserver.templates.TemplateEngineFactory;
 import net.nitrado.hytale.plugins.webserver.util.RequestUtils;
 import org.bson.Document;
 import org.bson.json.JsonWriterSettings;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 
+import jakarta.servlet.ServletException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -26,6 +31,20 @@ public class QueryServlet extends HttpServlet {
 
     private static final String JSON_V1 = "application/x.hytale.nitrado.query+json;version=1";
     private static final String TEXT_HTML = "text/html";
+
+    private JakartaServletWebApplication webApplication;
+    private TemplateEngine templateEngine;
+
+    public QueryServlet(TemplateEngine templateEngine) {
+        this.templateEngine = templateEngine;
+    }
+
+    private JakartaServletWebApplication getWebApplication() {
+        if (webApplication == null) {
+            webApplication = JakartaServletWebApplication.buildApplication(getServletContext());
+        }
+        return webApplication;
+    }
 
     @Override
     @RequirePermissions(
@@ -42,8 +61,8 @@ public class QueryServlet extends HttpServlet {
 
         var contentType = RequestUtils.negotiateContentType(
                 req,
-                JSON_V1,
-                TEXT_HTML
+                JSON_V1
+//                TEXT_HTML
         );
 
         if  (contentType == null) {
@@ -63,10 +82,11 @@ public class QueryServlet extends HttpServlet {
 
     private void handleHtml(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType(TEXT_HTML);
-        resp.setCharacterEncoding("UTF-8");
-        resp.getWriter().println("HTML output not implemented yet. Append ?output=json query parameter for JSON response.");
 
-        // TODO implement
+        var exchange = getWebApplication().buildExchange(req, resp);
+        var thymeleafContext = new WebContext(exchange);
+
+        this.templateEngine.process("nitrado.query", thymeleafContext, resp.getWriter());
     }
 
     protected void handleJsonV1(HttpServletRequest req, HttpServletResponse resp) throws IOException {
