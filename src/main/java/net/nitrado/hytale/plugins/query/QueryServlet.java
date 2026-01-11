@@ -61,7 +61,11 @@ public class QueryServlet extends HttpServlet {
         }
     }
 
-    private void handleHtml(HttpServletRequest req, HttpServletResponse resp) {
+    private void handleHtml(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.setContentType(TEXT_HTML);
+        resp.setCharacterEncoding("UTF-8");
+        resp.getWriter().println("HTML output not implemented yet. Append ?output=json query parameter for JSON response.");
+
         // TODO implement
     }
 
