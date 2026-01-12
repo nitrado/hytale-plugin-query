@@ -72,14 +72,20 @@ will always respond with the newest supported and accepted type.
     "CurrentPlayers": 1,
     "DefaultWorld": "default"
   },
-  "Players": {
-    "e5c4ef9a-6281-406e-8a71-21028279f547": {
+  "Players": [
+    {
       "Name": "MyName",
       "UUID": "e5c4ef9a-6281-406e-8a71-21028279f547",
       "World": "default"
     }
-  },
+  ],
   "Plugins": {
+    "Nitrado:WebServer": {
+      "Version": "1.0.0",
+      "Loaded": true,
+      "Enabled": true,
+      "State": "ENABLED"
+    },
     "Nitrado:Query": {
       "Version": "1.0.0",
       "Loaded": true,

@@ -25,6 +25,7 @@ import jakarta.servlet.ServletException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class QueryServlet extends HttpServlet {
@@ -145,12 +146,12 @@ public class QueryServlet extends HttpServlet {
     }
 
     protected void addPlayerData(Document doc) {
-        var players = new Document();
+        var players = new ArrayList<Document>();
         for (var entry : Universe.get().getWorlds().entrySet()) {
             var world = entry.getValue();
             for (var ref : world.getPlayerRefs()) {
 
-                players.append(ref.getUuid().toString(), new Document()
+                players.add(new Document()
                         .append("Name", ref.getUsername())
                         .append("UUID", ref.getUuid().toString())
                         .append("World", world.getName())
