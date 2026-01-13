@@ -12,7 +12,7 @@
   "Website": "https://www.nitrado.net",
   "Main": "net.nitrado.hytale.plugins.query.QueryPlugin",
   "ServerVersion": "*",
-  "OptionalDependencies": {
+  "Dependencies": {
     "Nitrado:WebServer": "*"
   }
 }
