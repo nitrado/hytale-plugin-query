@@ -11,11 +11,13 @@ endpoint that returns structured JSON data about the server, universe, players, 
 
 ## Main Features
 
-- **Server Information:** Exposes server name, version, protocol details, and maximum player count.
-- **Universe Data:** Returns current player count and default world name.
+- **Basic Information:** Exposes server name, max players, current player count, and public address (minimal data for status pages).
+- **Server Information:** Exposes server name, version, protocol details, maximum player count, and public address.
+- **Universe Data:** Returns current player count, default world name, and a list of all worlds with their individual player counts.
 - **Player List:** Provides a list of connected players with their names, UUIDs, and current world.
 - **Plugin Status:** Shows installed plugins with their versions, load state, and enabled status.
 - **Permission-Based Responses:** Returns only the data sections the authenticated user has permission to view.
+- **Configurable Public Address:** Allows specifying the server's public address to be included in responses.
 
 ## Installation
 
@@ -59,6 +61,12 @@ will always respond with the newest supported and accepted type.
 
 ```json
 {
+  "Basic": {
+    "Name": "Hytale Server",
+    "MaxPlayers": 100,
+    "CurrentPlayers": 1,
+    "Address": "play.example.com:25565"
+  },
   "Server": {
     "Name": "Hytale Server",
     "Version": "2026.01.10-ab2cd69ff",
@@ -66,11 +74,19 @@ will always respond with the newest supported and accepted type.
     "Patchline": "release",
     "ProtocolVersion": 1,
     "ProtocolHash": "34f442449d72fb78c4891edf9b218eb55ab2ad69ffd1cd152d66d71c814fcc7",
-    "MaxPlayers": 100
+    "MaxPlayers": 100,
+    "Address": "play.example.com:5520"
   },
   "Universe": {
     "CurrentPlayers": 1,
-    "DefaultWorld": "default"
+    "DefaultWorld": "default",
+    "Worlds": [
+      {
+        "Name": "default",
+        "CurrentPlayers": 1,
+        "IsDeleteOnRemove": false
+      }
+    ]
   },
   "Players": [
     {
@@ -102,6 +118,7 @@ The response is filtered based on the authenticated user's permissions:
 
 | Permission                        | Data Section |
 |-----------------------------------|--------------|
+| `nitrado.query.web.read.basic`    | Basic        |
 | `nitrado.query.web.read.server`   | Server       |
 | `nitrado.query.web.read.universe` | Universe     |
 | `nitrado.query.web.read.players`  | Players      |
@@ -118,12 +135,27 @@ To expose basic information without user authentication, configure the `ANONYMOU
 {
   "Groups": {
     "ANONYMOUS": [
-      "nitrado.query.web.read.server",
-      "nitrado.query.web.read.universe"
+      "nitrado.query.web.read.basic"
     ]
   }
 }
 ```
+
+### Configuration
+
+The plugin can be configured via `mods/Nitrado.Query/config.json`:
+
+```json
+{
+  "PublicAddress": "play.example.com:25565"
+}
+```
+
+| Setting         | Description                                                            |
+|-----------------|------------------------------------------------------------------------|
+| `PublicAddress` | The public address to include in Basic and Server responses. Optional. |
+
+Supported address formats: `hostname`, `hostname:port`, `ip:port`, `[ipv6]:port`.
 
 ## Contributing
 
