@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import net.nitrado.hytale.plugins.webserver.authentication.HytaleUserPrincipal;
 import net.nitrado.hytale.plugins.webserver.authorization.RequirePermissions;
-import net.nitrado.hytale.plugins.webserver.templates.TemplateEngineFactory;
 import net.nitrado.hytale.plugins.webserver.util.RequestUtils;
 import org.bson.Document;
 import org.bson.json.JsonWriterSettings;
@@ -21,10 +20,10 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 
-import jakarta.servlet.ServletException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -35,9 +34,11 @@ public class QueryServlet extends HttpServlet {
 
     private JakartaServletWebApplication webApplication;
     private TemplateEngine templateEngine;
+    private InetSocketAddress publicAddress;
 
-    public QueryServlet(TemplateEngine templateEngine) {
+    public QueryServlet(TemplateEngine templateEngine, InetSocketAddress publicAddress) {
         this.templateEngine = templateEngine;
+        this.publicAddress = publicAddress;
     }
 
     private JakartaServletWebApplication getWebApplication() {
@@ -51,6 +52,7 @@ public class QueryServlet extends HttpServlet {
     @RequirePermissions(
             mode = RequirePermissions.Mode.ANY,
             value = {
+                Permissions.WEB_READ_BASIC,
                 Permissions.WEB_READ_PLAYERS,
                 Permissions.WEB_READ_SERVER,
                 Permissions.WEB_READ_UNIVERSE,
@@ -97,6 +99,10 @@ public class QueryServlet extends HttpServlet {
 
         var principal = req.getUserPrincipal();
         if (principal instanceof HytaleUserPrincipal user) {
+            if (user.hasPermission(Permissions.WEB_READ_BASIC)) {
+                this.addBasicData(doc);
+            }
+
             if (user.hasPermission(Permissions.WEB_READ_SERVER)) {
                 this.addServerData(doc);
             }
@@ -125,24 +131,56 @@ public class QueryServlet extends HttpServlet {
         resp.setHeader("Deprecation", "true");
     }
 
+    protected void addBasicData(Document doc) {
+        var basicDoc = new Document()
+                .append("Name", HytaleServer.get().getServerName())
+                .append("Version", ManifestUtil.getImplementationVersion())
+                .append("MaxPlayers", HytaleServer.get().getConfig().getMaxPlayers())
+                .append("CurrentPlayers", Universe.get().getPlayerCount());
+
+        if (this.publicAddress != null) {
+            basicDoc.append("Address", this.publicAddress.toString());
+        }
+
+        doc.append("Basic", basicDoc);
+    }
+
     protected void addServerData(Document doc) {
-        doc.append("Server", new Document()
+        var serverDoc = new Document()
                 .append("Name", HytaleServer.get().getServerName())
                 .append("Version", ManifestUtil.getImplementationVersion())
                 .append("Revision", ManifestUtil.getImplementationRevisionId())
                 .append("Patchline", ManifestUtil.getPatchline())
                 .append("ProtocolVersion", ProtocolSettings.PROTOCOL_VERSION)
                 .append("ProtocolHash", ProtocolSettings.PROTOCOL_HASH)
-                .append("MaxPlayers", HytaleServer.get().getConfig().getMaxPlayers())
-        );
+                .append("MaxPlayers", HytaleServer.get().getConfig().getMaxPlayers());
+
+        if (this.publicAddress != null) {
+            serverDoc.append("Address", this.publicAddress.toString());
+        }
+
+        doc.append("Server", serverDoc);
     }
 
     protected void addUniverseData(Document doc) {
         var defaultWorld = Universe.get().getDefaultWorld();
-        doc.append("Universe", new Document()
-            .append("CurrentPlayers", Universe.get().getPlayerCount())
-            .append("DefaultWorld", defaultWorld == null ? null : defaultWorld.getName())
-        );
+        var universeDoc = new Document()
+                .append("CurrentPlayers", Universe.get().getPlayerCount())
+                .append("DefaultWorld", defaultWorld == null ? null : defaultWorld.getName());
+
+        var universeWorlds = Universe.get().getWorlds();
+
+        var worlds = new ArrayList<Document>();
+        universeWorlds.forEach((name, world) -> {
+            worlds.add(new Document()
+                    .append("Name", name)
+                    .append("CurrentPlayers", world.getPlayerCount())
+                    .append("IsDeleteOnRemove", world.getWorldConfig().isDeleteOnRemove())
+            );
+        });
+        universeDoc.append("Worlds", worlds);
+
+        doc.append("Universe", universeDoc);
     }
 
     protected void addPlayerData(Document doc) {
