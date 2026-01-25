@@ -1,31 +1,18 @@
 package net.nitrado.hytale.plugins.query;
 
-import com.hypixel.hytale.common.plugin.PluginIdentifier;
-import com.hypixel.hytale.common.plugin.PluginManifest;
-import com.hypixel.hytale.common.util.java.ManifestUtil;
-import com.hypixel.hytale.protocol.ProtocolSettings;
-import com.hypixel.hytale.server.core.HytaleServer;
-import com.hypixel.hytale.server.core.plugin.PluginBase;
-import com.hypixel.hytale.server.core.plugin.PluginManager;
-import com.hypixel.hytale.server.core.universe.Universe;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import net.nitrado.hytale.plugins.webserver.authentication.HytaleUserPrincipal;
 import net.nitrado.hytale.plugins.webserver.authorization.RequirePermissions;
 import net.nitrado.hytale.plugins.webserver.util.RequestUtils;
-import org.bson.Document;
 import org.bson.json.JsonWriterSettings;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class QueryServlet extends HttpServlet {
 
@@ -95,32 +82,37 @@ public class QueryServlet extends HttpServlet {
     protected void handleJsonV1(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType(JSON_V1);
 
-        Document doc = new Document();
+        var response = buildQueryResponse(req);
+        resp.getWriter().println(response.toDocument().toJson(JsonWriterSettings.builder().indent(true).build()));
+    }
+
+    protected QueryResponseV1 buildQueryResponse(HttpServletRequest req) {
+        var response = new QueryResponseV1(publicAddress);
 
         var principal = req.getUserPrincipal();
         if (principal instanceof HytaleUserPrincipal user) {
             if (user.hasPermission(Permissions.WEB_READ_BASIC)) {
-                this.addBasicData(doc);
+                response.addBasicData();
             }
 
             if (user.hasPermission(Permissions.WEB_READ_SERVER)) {
-                this.addServerData(doc);
+                response.addServerData();
             }
 
             if (user.hasPermission(Permissions.WEB_READ_PLAYERS)) {
-                this.addPlayerData(doc);
+                response.addPlayerData();
             }
 
             if (user.hasPermission(Permissions.WEB_READ_UNIVERSE)) {
-                this.addUniverseData(doc);
+                response.addUniverseData();
             }
 
             if (user.hasPermission(Permissions.WEB_READ_PLUGINS)) {
-                this.addPluginData(doc);
+                response.addPluginData();
             }
         }
 
-        resp.getWriter().println(doc.toJson(JsonWriterSettings.builder().indent(true).build()));
+        return response;
     }
 
     /**
@@ -129,105 +121,5 @@ public class QueryServlet extends HttpServlet {
      */
     private void setDeprecationHeader(HttpServletResponse resp) {
         resp.setHeader("Deprecation", "true");
-    }
-
-    protected void addBasicData(Document doc) {
-        var basicDoc = new Document()
-                .append("Name", HytaleServer.get().getServerName())
-                .append("Version", ManifestUtil.getImplementationVersion())
-                .append("MaxPlayers", HytaleServer.get().getConfig().getMaxPlayers())
-                .append("CurrentPlayers", Universe.get().getPlayerCount());
-
-        if (this.publicAddress != null) {
-            basicDoc.append("Address", this.publicAddress.toString());
-        }
-
-        doc.append("Basic", basicDoc);
-    }
-
-    protected void addServerData(Document doc) {
-        var serverDoc = new Document()
-                .append("Name", HytaleServer.get().getServerName())
-                .append("Version", ManifestUtil.getImplementationVersion())
-                .append("Revision", ManifestUtil.getImplementationRevisionId())
-                .append("Patchline", ManifestUtil.getPatchline())
-                .append("ProtocolVersion", ProtocolSettings.PROTOCOL_VERSION)
-                .append("ProtocolHash", ProtocolSettings.PROTOCOL_HASH)
-                .append("MaxPlayers", HytaleServer.get().getConfig().getMaxPlayers());
-
-        if (this.publicAddress != null) {
-            serverDoc.append("Address", this.publicAddress.toString());
-        }
-
-        doc.append("Server", serverDoc);
-    }
-
-    protected void addUniverseData(Document doc) {
-        var defaultWorld = Universe.get().getDefaultWorld();
-        var universeDoc = new Document()
-                .append("CurrentPlayers", Universe.get().getPlayerCount())
-                .append("DefaultWorld", defaultWorld == null ? null : defaultWorld.getName());
-
-        var universeWorlds = Universe.get().getWorlds();
-
-        var worlds = new ArrayList<Document>();
-        universeWorlds.forEach((name, world) -> {
-            worlds.add(new Document()
-                    .append("Name", name)
-                    .append("CurrentPlayers", world.getPlayerCount())
-                    .append("IsDeleteOnRemove", world.getWorldConfig().isDeleteOnRemove())
-            );
-        });
-        universeDoc.append("Worlds", worlds);
-
-        doc.append("Universe", universeDoc);
-    }
-
-    protected void addPlayerData(Document doc) {
-        var players = new ArrayList<Document>();
-        for (var entry : Universe.get().getWorlds().entrySet()) {
-            var world = entry.getValue();
-            for (var ref : world.getPlayerRefs()) {
-
-                players.add(new Document()
-                        .append("Name", ref.getUsername())
-                        .append("UUID", ref.getUuid().toString())
-                        .append("World", world.getName())
-                );
-            }
-        }
-
-        doc.append("Players", players);
-    }
-
-    protected void addPluginData(Document doc) {
-        var pluginDoc =  new Document();
-        var plugins = PluginManager.get().getPlugins();
-        var pluginMap = new HashMap<PluginIdentifier, PluginBase>(plugins.size());
-
-        for (var plugin : plugins) {
-            pluginMap.put(plugin.getIdentifier(), plugin);
-        }
-
-        for (var manifest : PluginManager.get().getAvailablePlugins().values()) {
-            var pluginIdentifier = new PluginIdentifier(manifest);
-            pluginDoc.append(pluginIdentifier.toString(),
-                    pluginToDoc(manifest, pluginMap.get(pluginIdentifier)));
-        }
-
-        doc.append("Plugins", pluginDoc);
-    }
-
-    protected Document pluginToDoc(@Nonnull PluginManifest manifest, @Nullable PluginBase plugin) {
-        var result = new Document();
-
-        result.append("Version", manifest.getVersion().toString());
-        result.append("Loaded", plugin != null);
-        if (plugin != null) {
-            result.append("Enabled", plugin.isEnabled());
-            result.append("State", plugin.getState().toString());
-        }
-
-        return result;
     }
 }
