@@ -63,6 +63,7 @@ will always respond with the newest supported and accepted type.
 {
   "Basic": {
     "Name": "Hytale Server",
+    "Version": "2026.01.10-ab2cd69ff",
     "MaxPlayers": 100,
     "CurrentPlayers": 1,
     "Address": "play.example.com:25565"
