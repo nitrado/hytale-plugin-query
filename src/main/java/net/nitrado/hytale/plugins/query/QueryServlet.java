@@ -52,6 +52,7 @@ public class QueryServlet extends HttpServlet {
     @RequirePermissions(
             mode = RequirePermissions.Mode.ANY,
             value = {
+                Permissions.WEB_READ_BASIC,
                 Permissions.WEB_READ_PLAYERS,
                 Permissions.WEB_READ_SERVER,
                 Permissions.WEB_READ_UNIVERSE,
