@@ -3,7 +3,9 @@
     <title>Nitrado:Query</title>
 </head>
 <body>
-    <section class="container py-4">
+    <section class="container py-4 position-relative">
+        <a class="btn btn-primary position-absolute top-0 end-0" th:href="@{/Nitrado/Query(output=json)}">Display as JSON</a>
+
         <h1 class="mb-5">Nitrado:Query</h1>
         <!-- Basic Data -->
         <div th:if="${response.basic != null}" class="mb-4">
