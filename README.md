@@ -3,6 +3,8 @@
 This plugin exposes server information via an HTTP endpoint. It depends on
 [Nitrado:WebServer](https://github.com/nitrado/hytale-plugin-webserver).
 
+![screenshot.png](docs/images/screenshot.png)
+
 ## Purpose of this Plugin
 
 When running a Hytale server, external systems often need access to basic server information for

@@ -1,10 +1,13 @@
 package net.nitrado.hytale.plugins.query;
 
+import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import net.nitrado.hytale.plugins.webserver.WebServerPlugin;
 import net.nitrado.hytale.plugins.webserver.authentication.HytaleUserPrincipal;
 import net.nitrado.hytale.plugins.webserver.authorization.RequirePermissions;
+import net.nitrado.hytale.plugins.webserver.servlets.TemplateServlet;
 import net.nitrado.hytale.plugins.webserver.util.RequestUtils;
 import org.bson.json.JsonWriterSettings;
 import org.thymeleaf.TemplateEngine;
@@ -13,8 +16,9 @@ import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
 
-public class QueryServlet extends HttpServlet {
+public class QueryServlet extends TemplateServlet {
 
     private static final String JSON_V1 = "application/x.hytale.nitrado.query+json;version=1";
     private static final String TEXT_HTML = "text/html";
@@ -23,7 +27,9 @@ public class QueryServlet extends HttpServlet {
     private TemplateEngine templateEngine;
     private InetSocketAddress publicAddress;
 
-    public QueryServlet(TemplateEngine templateEngine, InetSocketAddress publicAddress) {
+    public QueryServlet(WebServerPlugin parentPlugin, JavaPlugin thisPlugin, TemplateEngine templateEngine, InetSocketAddress publicAddress) {
+        super(parentPlugin, thisPlugin);
+
         this.templateEngine = templateEngine;
         this.publicAddress = publicAddress;
     }
@@ -51,8 +57,8 @@ public class QueryServlet extends HttpServlet {
 
         var contentType = RequestUtils.negotiateContentType(
                 req,
-                JSON_V1
-//                TEXT_HTML
+                JSON_V1,
+                TEXT_HTML
         );
 
         if  (contentType == null) {
@@ -71,12 +77,15 @@ public class QueryServlet extends HttpServlet {
     }
 
     private void handleHtml(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.setCharacterEncoding("UTF-8");
         resp.setContentType(TEXT_HTML);
 
-        var exchange = getWebApplication().buildExchange(req, resp);
-        var thymeleafContext = new WebContext(exchange);
+        var response = buildQueryResponse(req);
 
-        this.templateEngine.process("nitrado.query", thymeleafContext, resp.getWriter());
+        var vars = new HashMap<String, Object>();
+        vars.put("response", response);
+
+        this.renderTemplate(req, resp, "nitrado.query", vars);
     }
 
     protected void handleJsonV1(HttpServletRequest req, HttpServletResponse resp) throws IOException {

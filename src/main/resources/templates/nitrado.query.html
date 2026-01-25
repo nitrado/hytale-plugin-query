@@ -3,6 +3,97 @@
     <title>Nitrado:Query</title>
 </head>
 <body>
-    <section>Sample Text</section>
+    <section class="container py-4">
+        <h1 class="mb-5">Nitrado:Query</h1>
+        <!-- Basic Data -->
+        <div th:if="${response.basic != null}" class="mb-4">
+            <h5>Basic</h5>
+            <table class="table table-striped">
+                <tbody>
+                    <tr><th scope="row">Name</th><td th:text="${response.basic.name}"></td></tr>
+                    <tr><th scope="row">Version</th><td th:text="${response.basic.version}"></td></tr>
+                    <tr><th scope="row">Current Players</th><td th:text="${response.basic.currentPlayers}"></td></tr>
+                    <tr><th scope="row">Max Players</th><td th:text="${response.basic.maxPlayers}"></td></tr>
+                    <tr th:if="${response.basic.formattedAddress != null}"><th scope="row">Address</th><td th:text="${response.basic.formattedAddress}"></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Server Data -->
+        <div th:if="${response.server != null}" class="mb-4">
+            <h5>Server</h5>
+            <table class="table table-striped">
+                <tbody>
+                    <tr><th scope="row">Name</th><td th:text="${response.server.name}"></td></tr>
+                    <tr><th scope="row">Version</th><td th:text="${response.server.version}"></td></tr>
+                    <tr><th scope="row">Revision</th><td th:text="${response.server.revision}"></td></tr>
+                    <tr><th scope="row">Patchline</th><td th:text="${response.server.patchline}"></td></tr>
+                    <tr><th scope="row">Protocol Version</th><td th:text="${response.server.protocolVersion}"></td></tr>
+                    <tr><th scope="row">Protocol Hash</th><td th:text="${response.server.protocolHash}"></td></tr>
+                    <tr><th scope="row">Max Players</th><td th:text="${response.server.maxPlayers}"></td></tr>
+                    <tr th:if="${response.server.formattedAddress != null}"><th scope="row">Address</th><td th:text="${response.server.formattedAddress}"></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Universe Data -->
+        <div th:if="${response.universe != null}" class="mb-4">
+            <h5>Universe</h5>
+            <table class="table table-striped">
+                <tbody>
+                    <tr><th scope="row">Current Players</th><td th:text="${response.universe.currentPlayers}"></td></tr>
+                    <tr th:if="${response.universe.defaultWorld != null}"><th scope="row">Default World</th><td th:text="${response.universe.defaultWorld}"></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Players Data -->
+        <div th:if="${response.players != null}" class="mb-4">
+            <h5>Players</h5>
+            <table class="table table-striped" th:if="${!response.players.isEmpty()}">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>UUID</th>
+                        <th>World</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="player : ${response.players}">
+                        <td th:text="${player.name}"></td>
+                        <td th:text="${player.uuid}"></td>
+                        <td th:text="${player.world}"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p th:if="${response.players.isEmpty()}" class="text-muted">No players online</p>
+        </div>
+
+        <!-- Plugins Data -->
+        <div th:if="${response.plugins != null}" class="mb-4">
+            <h5>Plugins</h5>
+            <table class="table table-striped" th:if="${!response.plugins.isEmpty()}">
+                <thead>
+                    <tr>
+                        <th>Identifier</th>
+                        <th>Version</th>
+                        <th>Loaded</th>
+                        <th>Enabled</th>
+                        <th>State</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="plugin : ${response.plugins}">
+                        <td th:text="${plugin.identifier}"></td>
+                        <td th:text="${plugin.version}"></td>
+                        <td th:text="${plugin.loaded}"></td>
+                        <td th:text="${plugin.enabled}"></td>
+                        <td th:text="${plugin.state}"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p th:if="${response.plugins.isEmpty()}" class="text-muted">No plugins available</p>
+        </div>
+    </section>
 </body>
 </html>
