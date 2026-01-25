@@ -133,9 +133,9 @@ public class QueryServlet extends HttpServlet {
     protected void addBasicData(Document doc) {
         var basicDoc = new Document()
                 .append("Name", HytaleServer.get().getServerName())
+                .append("Version", ManifestUtil.getImplementationVersion())
                 .append("MaxPlayers", HytaleServer.get().getConfig().getMaxPlayers())
                 .append("CurrentPlayers", Universe.get().getPlayerCount());
-
 
         if (this.publicAddress != null) {
             basicDoc.append("Address", this.publicAddress.toString());
