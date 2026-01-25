@@ -89,6 +89,7 @@ public class QueryServlet extends TemplateServlet {
     }
 
     protected void handleJsonV1(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.setCharacterEncoding("UTF-8");
         resp.setContentType(JSON_V1);
 
         var response = buildQueryResponse(req);
