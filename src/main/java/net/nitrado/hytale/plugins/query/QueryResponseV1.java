@@ -193,7 +193,11 @@ public class QueryResponseV1 {
             int maxPlayers,
             int currentPlayers,
             InetSocketAddress address
-    ) {}
+    ) {
+        public String formattedAddress() {
+            return address == null ? null : formatAddress(address);
+        }
+    }
 
     public record ServerData(
             String name,
@@ -204,7 +208,11 @@ public class QueryResponseV1 {
             String protocolHash,
             int maxPlayers,
             InetSocketAddress address
-    ) {}
+    ) {
+        public String formattedAddress() {
+            return address == null ? null : formatAddress(address);
+        }
+    }
 
     public record UniverseData(
             int currentPlayers,
@@ -225,7 +233,7 @@ public class QueryResponseV1 {
             String state
     ) {}
 
-    private String formatAddress(InetSocketAddress address) {
+    private static String formatAddress(InetSocketAddress address) {
             String formatted;
 
             formatted = address.getHostString();
