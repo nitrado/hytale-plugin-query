@@ -42,10 +42,12 @@ public class QueryPlugin extends JavaPlugin {
 
         this.webServerPlugin = webServer;
 
-        var templateEngine = this.webServerPlugin.getTemplateEngineFactory().getEngineFor(this);
-
         try {
-            webServerPlugin.addServlet(this, "", new QueryServlet(webServerPlugin, this, templateEngine, publicAddress));
+            webServerPlugin.addServlet(
+                    this,
+                    "",
+                    new QueryServlet(webServerPlugin, this, publicAddress)
+            );
         } catch (Exception e) {
             getLogger().at(Level.SEVERE).withCause(e).log("Failed to register route.");
         }

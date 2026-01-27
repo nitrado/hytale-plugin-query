@@ -10,9 +10,6 @@ import net.nitrado.hytale.plugins.webserver.authorization.RequirePermissions;
 import net.nitrado.hytale.plugins.webserver.servlets.TemplateServlet;
 import net.nitrado.hytale.plugins.webserver.util.RequestUtils;
 import org.bson.json.JsonWriterSettings;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -23,22 +20,12 @@ public class QueryServlet extends TemplateServlet {
     private static final String JSON_V1 = "application/x.hytale.nitrado.query+json;version=1";
     private static final String TEXT_HTML = "text/html";
 
-    private JakartaServletWebApplication webApplication;
-    private TemplateEngine templateEngine;
     private InetSocketAddress publicAddress;
 
-    public QueryServlet(WebServerPlugin parentPlugin, JavaPlugin thisPlugin, TemplateEngine templateEngine, InetSocketAddress publicAddress) {
+    public QueryServlet(WebServerPlugin parentPlugin, JavaPlugin thisPlugin, InetSocketAddress publicAddress) {
         super(parentPlugin, thisPlugin);
 
-        this.templateEngine = templateEngine;
         this.publicAddress = publicAddress;
-    }
-
-    private JakartaServletWebApplication getWebApplication() {
-        if (webApplication == null) {
-            webApplication = JakartaServletWebApplication.buildApplication(getServletContext());
-        }
-        return webApplication;
     }
 
     @Override
