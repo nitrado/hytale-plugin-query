@@ -31,7 +31,7 @@
                     <tr><th scope="row">Revision</th><td th:text="${response.server.revision}"></td></tr>
                     <tr><th scope="row">Patchline</th><td th:text="${response.server.patchline}"></td></tr>
                     <tr><th scope="row">Protocol Version</th><td th:text="${response.server.protocolVersion}"></td></tr>
-                    <tr><th scope="row">Protocol Hash</th><td th:text="${response.server.protocolHash}"></td></tr>
+                    <tr><th scope="row">Protocol CRC</th><td th:text="${response.server.protocolCrc}"></td></tr>
                     <tr><th scope="row">Max Players</th><td th:text="${response.server.maxPlayers}"></td></tr>
                     <tr th:if="${response.server.formattedAddress != null}"><th scope="row">Address</th><td th:text="${response.server.formattedAddress}"></td></tr>
                 </tbody>

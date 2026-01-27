@@ -10,22 +10,35 @@
 
     <properties>
         <revision>1.0.0-SNAPSHOT</revision>
+        <hytale.server.version>2026.01.24-6e2d4fc36</hytale.server.version>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>hytale-release</id>
+            <url>https://maven.hytale.com/release</url>
+        </repository>
+        <repository>
+            <id>hytalemodding-releases</id>
+            <name>HytaleModding</name>
+            <url>https://maven.hytalemodding.dev/releases</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>com.hypixel.hytale</groupId>
-            <artifactId>HytaleServer-parent</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <artifactId>Server</artifactId>
+            <version>${hytale.server.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.nitrado.hytale.plugins</groupId>
             <artifactId>nitrado-webserver</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

@@ -65,7 +65,7 @@ public class QueryResponseV1 {
                 ManifestUtil.getImplementationRevisionId(),
                 ManifestUtil.getPatchline(),
                 ProtocolSettings.PROTOCOL_VERSION,
-                ProtocolSettings.PROTOCOL_HASH,
+                ProtocolSettings.PROTOCOL_CRC,
                 HytaleServer.get().getConfig().getMaxPlayers(),
                 address
         );
@@ -140,7 +140,9 @@ public class QueryResponseV1 {
                     .append("Revision", server.revision())
                     .append("Patchline", server.patchline())
                     .append("ProtocolVersion", server.protocolVersion())
-                    .append("ProtocolHash", server.protocolHash())
+                    // Deprecated: ProtocolHash
+                    .append("ProtocolHash", String.valueOf(server.protocolCrc()))
+                    .append("ProtocolCrc", server.protocolCrc())
                     .append("MaxPlayers", server.maxPlayers());
 
             if (server.address() != null) {
@@ -205,7 +207,7 @@ public class QueryResponseV1 {
             String revision,
             String patchline,
             int protocolVersion,
-            String protocolHash,
+            int protocolCrc,
             int maxPlayers,
             InetSocketAddress address
     ) {
