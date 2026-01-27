@@ -15,7 +15,7 @@ endpoint that returns structured JSON data about the server, universe, players, 
 
 - **Basic Information:** Exposes server name, max players, current player count, and public address (minimal data for status pages).
 - **Server Information:** Exposes server name, version, protocol details, maximum player count, and public address.
-- **Universe Data:** Returns current player count, default world name, and a list of all worlds with their individual player counts.
+- **Universe Data:** Returns current player count and default world name.
 - **Player List:** Provides a list of connected players with their names, UUIDs, and current world.
 - **Plugin Status:** Shows installed plugins with their versions, load state, and enabled status.
 - **Permission-Based Responses:** Returns only the data sections the authenticated user has permission to view.
@@ -76,20 +76,14 @@ will always respond with the newest supported and accepted type.
     "Revision": "ab2cd69ff816cb831f8792a0782938dce22eeadc",
     "Patchline": "release",
     "ProtocolVersion": 1,
-    "ProtocolHash": "34f442449d72fb78c4891edf9b218eb55ab2ad69ffd1cd152d66d71c814fcc7",
+    "ProtocolHash": "123456789",
+    "ProtocolCrc": 123456789,
     "MaxPlayers": 100,
     "Address": "play.example.com:5520"
   },
   "Universe": {
     "CurrentPlayers": 1,
-    "DefaultWorld": "default",
-    "Worlds": [
-      {
-        "Name": "default",
-        "CurrentPlayers": 1,
-        "IsDeleteOnRemove": false
-      }
-    ]
+    "DefaultWorld": "default"
   },
   "Players": [
     {
@@ -114,6 +108,8 @@ will always respond with the newest supported and accepted type.
   }
 }
 ```
+
+> **Note:** The `ProtocolHash` field is deprecated and will be removed in a future version. Use `ProtocolCrc` instead.
 
 ### Permissions
 
